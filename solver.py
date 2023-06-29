@@ -28,11 +28,14 @@ class Board:
             mystring += '|\n'
         mystring += '-' * (self.width + 2)
         return mystring
+    def set_piece(self, column: int, row: int, piece: Piece):
+        self.pieces[row][column] = piece
 
 def main() -> None:
     piece = Piece(Team.X)
     print(piece)
     board = Board(3,3)
+    board.set_piece(0,1,piece)
     print(board)
 
 main()
