@@ -1,4 +1,14 @@
+from enum import Enum
+
+Team = Enum('Team', ['X', 'O'])
+
+class Piece:
+    def __init__(self, team: Team):
+        self.team = team
+
+
 def main() -> None:
-    print("Hello World!")
+    piece = Piece(Team.X)
+    print(piece)
 
 main()
