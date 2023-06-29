@@ -10,18 +10,23 @@ class Piece:
 
 class Board:
     def __init__(self, width: int, height: int):
-        self.pieces = [[None] * width] * height
+        self.pieces = []
+        for row in range(height):
+            self.pieces.append([None] * width)
         self.width = width
         self.height = height
     def __str__(self) -> str:
-        mystring: str = ''
+        mystring: str = '-' * (self.width + 2)
+        mystring += '\n'
         for row in self.pieces:
+            mystring += '|'
             for piece in row:
                 if(piece is None):
                     mystring += ' '
                 else:
-                    mystring += piece
-            mystring += '\n'
+                    mystring += str(piece)
+            mystring += '|\n'
+        mystring += '-' * (self.width + 2)
         return mystring
 
 def main() -> None:
