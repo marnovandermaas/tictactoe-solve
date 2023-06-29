@@ -1,6 +1,6 @@
 from enum import Enum
 
-Team = Enum('Team', ['X', 'O'])
+Team = Enum('Team', ['X', 'O', 'E'])
 
 class Piece:
     def __init__(self, team: Team):
@@ -10,9 +10,24 @@ class Piece:
 
 class Board:
     def __init__(self, dimension: int):
-        self.pieces = []
+        self.pieces: list[list[Piece]] = []
         for row in range(dimension):
-            self.pieces.append([None] * dimension)
+            tmp_row: list[Piece] = []
+            for column in range(dimension):
+                tmp_row.append(Piece(Team.E))
+            self.pieces.append(tmp_row)
+        for column in range(dimension):
+            tmp_col: list[Piece] = []
+            for idx in range(dimension):
+                tmp_col.append(self.pieces[idx][column])
+            self.pieces.append(tmp_col)
+        diag0: list[Piece] = []
+        diag1: list[Piece] = []
+        for idx in range(dimension):
+            diag0.append(self.pieces[idx][idx])
+            diag1.append(self.pieces[idx][dimension-1-idx])
+        self.pieces.append(diag0)
+        self.pieces.append(diag1)
         self.dimension = dimension
     def __str__(self) -> str:
         mystring: str = '-' * (self.dimension + 2)
@@ -20,23 +35,23 @@ class Board:
         for row in self.pieces:
             mystring += '|'
             for piece in row:
-                if(piece is None):
-                    mystring += ' '
-                else:
-                    mystring += str(piece)
+                mystring += str(piece)
             mystring += '|\n'
         mystring += '-' * (self.dimension + 2)
         return mystring
-    def set_piece(self, column: int, row: int, piece: Piece) -> None:
+    def set_piece(self, column: int, row: int, team: Team) -> None:
         if(column >= self.dimension or row >= self.dimension):
             sys.exit()
-        self.pieces[row][column] = piece
+        self.pieces[row][column].team = team
+    def get_winner(self) -> Piece:
+        # Check diagonal
+        pass
 
 def main() -> None:
-    piece = Piece(Team.X)
-    print(piece)
     board = Board(3)
-    board.set_piece(0,1,piece)
+    board.set_piece(0, 1, Team.X)
+    board.set_piece(1, 1, Team.O)
+    board.set_piece(0, 2, Team.X)
     print(board)
 
 main()
