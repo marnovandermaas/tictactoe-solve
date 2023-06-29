@@ -28,7 +28,8 @@ class Board:
             diag1.append(self.pieces[idx][dimension-1-idx])
         self.pieces.append(diag0)
         self.pieces.append(diag1)
-        self.dimension = dimension
+        self.dimension: int = dimension
+        self.on_move: Team = Team.X
     def __str__(self) -> str:
         mystring: str = '-' * (self.dimension + 2)
         mystring += '\n'
@@ -40,10 +41,16 @@ class Board:
         mystring += '-' * (self.dimension + 2)
         mystring += '\nWinner: ' + self.get_winner().name
         return mystring
-    def set_piece(self, column: int, row: int, team: Team) -> None:
+    def make_move(self, column: int, row: int) -> None:
         if(column >= self.dimension or row >= self.dimension):
             sys.exit()
-        self.pieces[row][column].team = team
+        self.pieces[row][column].team = self.on_move
+        if self.on_move is Team.X:
+            self.on_move = Team.O
+        elif self.on_move is Team.O:
+            self.on_move = Team.X
+        else:
+            sys.exit()
     def get_winner(self) -> Team:
         for line in self.pieces:
             team = line[0].team
@@ -56,11 +63,12 @@ class Board:
 
 def main() -> None:
     board = Board(3)
-    board.set_piece(0, 1, Team.X)
-    board.set_piece(1, 1, Team.O)
-    board.set_piece(0, 2, Team.X)
+    board.make_move(0, 1)
+    board.make_move(1, 1)
+    board.make_move(0, 2)
     print(board)
-    board.set_piece(0, 0, Team.X)
+    board.make_move(2, 2)
+    board.make_move(0, 0)
     print(board)
 
 main()
