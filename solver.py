@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum
 
 Team = Enum('Team', ['X', 'O', 'E'])
@@ -41,16 +43,27 @@ class Board:
         mystring += '-' * (self.dimension + 2)
         mystring += '\nWinner: ' + self.get_winner().name
         return mystring
-    def make_move(self, column: int, row: int) -> None:
+    def set_position(self, pieces: list[list[Piece]]):
+        if len(pieces) != self.dimension * 2 + 2:
+            sys.exit()
+        if len(pieces[0]) != self.dimension:
+            sys.exit()
+        for row in range(self.dimension):
+            for idx, piece in enumerate(pieces[row]):
+                self.pieces[row][idx].team = piece.team
+    def make_move(self, column: int, row: int) -> Board:
         if(column >= self.dimension or row >= self.dimension):
             sys.exit()
-        self.pieces[row][column].team = self.on_move
         if self.on_move is Team.X:
-            self.on_move = Team.O
+            next_move = Team.O
         elif self.on_move is Team.O:
-            self.on_move = Team.X
+            next_move = Team.X
         else:
             sys.exit()
+        board = Board(dimension = self.dimension, on_move = next_move)
+        board.set_position(self.pieces)
+        board.pieces[row][column].team = self.on_move
+        return board
     def get_winner(self) -> Team:
         for line in self.pieces:
             team = line[0].team
@@ -63,12 +76,12 @@ class Board:
 
 def main() -> None:
     board = Board()
-    board.make_move(0, 1)
-    board.make_move(1, 1)
-    board.make_move(0, 2)
+    board = board.make_move(0, 1)
+    board = board.make_move(1, 1)
+    board = board.make_move(0, 2)
     print(board)
-    board.make_move(2, 2)
-    board.make_move(0, 0)
+    board = board.make_move(2, 2)
+    board = board.make_move(0, 0)
     print(board)
 
 main()
