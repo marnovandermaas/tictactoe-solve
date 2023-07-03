@@ -60,6 +60,7 @@ class Board:
             mystring += ','
         mystring += str(self.winner) + '}'
         return mystring
+    #Test whether a board is equal or not
     def __eq__(self, other: Board) -> bool:
         if self.dimension != other.dimension:
             return False
@@ -127,7 +128,7 @@ def recursive_solve(boards: list[Board], already_searched: list[Board] = [], dep
             ret_val += recursive_solve(new_boards, ret_val, depth + 1)
     return ret_val
 
-def evaluate_positions(unique_boards: list[Board]) -> None:
+def evaluate_positions(unique_boards: list[Board], boards_one_move_down: list[Board]) -> None:
     for board in unique_boards:
         if board.winner is None:
             winner = board.get_winner()
@@ -140,14 +141,14 @@ def evaluate_positions(unique_boards: list[Board]) -> None:
                 #Mark draw for positions with no moves and no winners
                 board.winner = Team.E
                 continue
-            indeces = []
-            for move in moves:
-                new_board = board.make_move(move[0], move[1])
-                index = unique_boards.index(new_board)
-                if index is None:
-                    sys.exit()
-                indeces.append(index)
-            board.leads_to = indeces
+            #indeces = []
+            #for move in moves:
+            #    new_board = board.make_move(move[0], move[1])
+            #    index = unique_boards.index(new_board)
+            #    if index is None:
+            #        sys.exit()
+            #    indeces.append(index)
+            #board.leads_to = indeces
 
 def main() -> None:
     board = Board()
@@ -172,16 +173,25 @@ def main() -> None:
     root = [Board()]
     space = recursive_solve(root)
     print("Final recursion with length " + str(len(space)))
-    unique_space = []
+    unique_space = {}
+    #Populate dictionary with moves
+    for move in range(10):
+        unique_space[move] = []
     #Filter out the unique positions
     for board in space:
-        if board not in unique_space:
-            unique_space.append(board)
-    print("Evaluating positions in unique space with length " + str(len(unique_space)))
-    evaluate_positions(unique_space)
+        num_moves = len(board.get_moves())
+        if board not in unique_space[num_moves]:
+            unique_space[num_moves].append(board)
+    print("Evaluating positions in unique space")
+    next_boards = []
+    for move in range(10):
+        evaluate_positions(unique_space[move], next_boards)
+        next_boards = unique_space[move]
     print("Output to recursion.txt")
     with open("recursion.txt", "w") as f:
-        for board in unique_space:
-            print(board.short_string(), file=f)
+        for move in unique_space:
+            print("=====" + str(move) + "=====", file=f)
+            for board in unique_space[move]:
+                print(board.short_string(), file=f)
 
 main()
