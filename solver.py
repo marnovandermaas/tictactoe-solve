@@ -38,6 +38,7 @@ class Board:
         self.pieces.append(diag1)
         self.dimension: int = dimension
         self.on_move: Team = on_move
+        self.winner = None
     #Prints all rows columns and diagonals including the winner of a position
     def __str__(self) -> str:
         mystring: str = '-' * (self.dimension + 2)
@@ -57,7 +58,7 @@ class Board:
             for piece in self.pieces[row]:
                 mystring += str(piece)
             mystring += ','
-        mystring += self.get_winner().name + '}'
+        mystring += str(self.winner) + '}'
         return mystring
     def __eq__(self, other: Board) -> bool:
         if self.dimension != other.dimension:
@@ -126,6 +127,13 @@ def recursive_solve(boards: list[Board], already_searched: list[Board] = [], dep
             ret_val += recursive_solve(new_boards, ret_val, depth + 1)
     return ret_val
 
+def evaluate_positions(unique_boards: list[Board]) -> None:
+    #Mark winner for decisive positions
+    for board in unique_boards:
+        winner = board.get_winner()
+        if winner != Team.E:
+            board.winner = winner
+
 def main() -> None:
     board = Board()
     board = board.make_move(0, 1)
@@ -150,9 +158,11 @@ def main() -> None:
     space = recursive_solve(root)
     print("Final recursion with length " + str(len(space)))
     unique_space = []
+    #Filter out the unique positions
     for board in space:
         if board not in unique_space:
             unique_space.append(board)
+    evaluate_positions(unique_space)
     print("Unique space with length " + str(len(unique_space)))
     with open("recursion.txt", "w") as f:
         for board in unique_space:
