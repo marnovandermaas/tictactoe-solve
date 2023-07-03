@@ -126,7 +126,6 @@ def recursive_solve(boards: list[Board], already_searched: list[Board] = [], dep
             ret_val += recursive_solve(new_boards, ret_val, depth + 1)
     return ret_val
 
-
 def main() -> None:
     board = Board()
     board = board.make_move(0, 1)
@@ -150,8 +149,13 @@ def main() -> None:
     root = [Board()]
     space = recursive_solve(root)
     print("Final recursion with length " + str(len(space)))
+    unique_space = []
+    for board in space:
+        if board not in unique_space:
+            unique_space.append(board)
+    print("Unique space with length " + str(len(unique_space)))
     with open("recursion.txt", "a") as f:
-        for board in space:
+        for board, winner in unique_space:
             print(board.short_string(), file=f)
 
 main()
