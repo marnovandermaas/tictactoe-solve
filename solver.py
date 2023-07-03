@@ -9,7 +9,7 @@ class Piece:
         return self.team.name
 
 class Board:
-    def __init__(self, dimension: int):
+    def __init__(self, dimension: int = 3, on_move: Team = Team.X):
         self.pieces: list[list[Piece]] = []
         for row in range(dimension):
             tmp_row: list[Piece] = []
@@ -29,7 +29,7 @@ class Board:
         self.pieces.append(diag0)
         self.pieces.append(diag1)
         self.dimension: int = dimension
-        self.on_move: Team = Team.X
+        self.on_move: Team = on_move
     def __str__(self) -> str:
         mystring: str = '-' * (self.dimension + 2)
         mystring += '\n'
@@ -62,7 +62,7 @@ class Board:
         return Team.E
 
 def main() -> None:
-    board = Board(3)
+    board = Board()
     board.make_move(0, 1)
     board.make_move(1, 1)
     board.make_move(0, 2)
