@@ -113,7 +113,7 @@ class Board:
 
 def recursive_solve(boards: list[Board], already_searched: list[Board] = [], depth: int = 0) -> list[Board]:
     ret_val = boards.copy()
-    if depth < 5:
+    if depth < 3:
         print("Starting recursion " + str(depth) + " with length " + str(len(ret_val)))
     for board in boards:
         if(board.get_winner() == Team.E):
@@ -140,6 +140,12 @@ def main() -> None:
     print(board) #X should be winner
     print(board.short_string())
     print(board.get_moves())
+    old_board = old_board.make_move(2, 2)
+    old_board = old_board.make_move(0, 0)
+    print(id(board))
+    print(id(old_board))
+    print(board == old_board) #This should be True even though the IDs above don't match
+
     print("Now trying to recursively solve")
     root = [Board()]
     space = recursive_solve(root)
