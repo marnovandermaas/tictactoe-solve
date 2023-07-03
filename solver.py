@@ -1,16 +1,20 @@
+#Necessary to use list[Piece] instead of List[Piece]
 from __future__ import annotations
 
 from enum import Enum
 
+#Two teams X and O, as well as an E for empty fields
 Team = Enum('Team', ['X', 'O', 'E'])
 
 class Piece:
+    #Currently this just takes a team, but eventually it can include a power like for Gobblet
     def __init__(self, team: Team):
         self.team = team
     def __str__(self) -> str:
         return self.team.name
 
 class Board:
+    #Creates a board object
     def __init__(self, dimension: int = 3, on_move: Team = Team.X):
         self.pieces: list[list[Piece]] = []
         for row in range(dimension):
@@ -32,6 +36,7 @@ class Board:
         self.pieces.append(diag1)
         self.dimension: int = dimension
         self.on_move: Team = on_move
+    #Prints all rows columns and diagonals including the winner of a position
     def __str__(self) -> str:
         mystring: str = '-' * (self.dimension + 2)
         mystring += '\n'
@@ -43,6 +48,7 @@ class Board:
         mystring += '-' * (self.dimension + 2)
         mystring += '\nWinner: ' + self.get_winner().name
         return mystring
+    #Set a postition
     def set_position(self, pieces: list[list[Piece]]):
         if len(pieces) != self.dimension * 2 + 2:
             sys.exit()
@@ -51,6 +57,7 @@ class Board:
         for row in range(self.dimension):
             for idx, piece in enumerate(pieces[row]):
                 self.pieces[row][idx].team = piece.team
+    #Make a move, advance the turn and return the new board as a new object
     def make_move(self, column: int, row: int) -> Board:
         if(column >= self.dimension or row >= self.dimension):
             sys.exit()
@@ -64,6 +71,7 @@ class Board:
         board.set_position(self.pieces)
         board.pieces[row][column].team = self.on_move
         return board
+    #Evaluates who is winning in the position, if no one, return E.
     def get_winner(self) -> Team:
         for line in self.pieces:
             team = line[0].team
@@ -79,10 +87,10 @@ def main() -> None:
     board = board.make_move(0, 1)
     board = board.make_move(1, 1)
     old_board = board.make_move(0, 2)
-    print(old_board)
+    print(old_board) #E should be winner
     board = old_board.make_move(2, 2)
     board = board.make_move(0, 0)
-    print(board)
-    print(old_board)
+    print(board) #X should be winner
+    print(old_board) #E should be winner
 
 main()
