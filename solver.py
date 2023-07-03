@@ -12,6 +12,8 @@ class Piece:
         self.team = team
     def __str__(self) -> str:
         return self.team.name
+    def __eq__(self, other) -> bool:
+        return self.team == other.team
 
 class Board:
     #Creates a board object
@@ -48,6 +50,25 @@ class Board:
         mystring += '-' * (self.dimension + 2)
         mystring += '\nWinner: ' + self.get_winner().name
         return mystring
+    #Returns a short string for lots of printing
+    def short_string(self) -> str:
+        mystring = '{'
+        for row in range(self.dimension):
+            for piece in self.pieces[row]:
+                mystring += str(piece)
+            mystring += ','
+        mystring += self.get_winner().name + '}'
+        return mystring
+    def __eq__(self, other: Board) -> bool:
+        if self.dimension != other.dimension:
+            return False
+        if self.on_move != other.on_move:
+            return False
+        for row in range(self.dimension):
+            for idx, piece in enumerate(self.pieces[row]):
+                if piece != other.pieces[row][idx]:
+                    return False
+        return True
     #Set a postition
     def set_position(self, pieces: list[list[Piece]]):
         if len(pieces) != self.dimension * 2 + 2:
@@ -87,8 +108,24 @@ class Board:
         for row in range(self.dimension):
             for idx, piece in enumerate(self.pieces[row]):
                 if piece.team is Team.E:
-                    moves.append((row,idx))
+                    moves.append((idx,row))
         return moves
+
+def recursive_solve(boards: list[Board], already_searched: list[Board] = [], depth: int = 0) -> list[Board]:
+    ret_val = boards.copy()
+    if depth < 5:
+        print("Starting recursion " + str(depth) + " with length " + str(len(ret_val)))
+    for board in boards:
+        if(board.get_winner() == Team.E):
+            new_boards = []
+            moves = board.get_moves()
+            for move in moves:
+                new_board = board.make_move(move[0], move[1])
+                if new_board not in already_searched:
+                    new_boards.append(new_board)
+            ret_val += recursive_solve(new_boards, ret_val, depth + 1)
+    return ret_val
+
 
 def main() -> None:
     board = Board()
@@ -96,11 +133,19 @@ def main() -> None:
     board = board.make_move(1, 1)
     old_board = board.make_move(0, 2)
     print(old_board) #E should be winner
+    print(old_board.short_string())
     print(old_board.get_moves())
     board = old_board.make_move(2, 2)
     board = board.make_move(0, 0)
     print(board) #X should be winner
+    print(board.short_string())
     print(board.get_moves())
-    print(old_board) #E should be winner
+    print("Now trying to recursively solve")
+    root = [Board()]
+    space = recursive_solve(root)
+    print("Final recursion with length " + str(len(space)))
+    with open("recursion.txt", "a") as f:
+        for board in space:
+            print(board.short_string(), file=f)
 
 main()
