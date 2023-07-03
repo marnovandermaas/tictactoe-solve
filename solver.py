@@ -81,6 +81,14 @@ class Board:
             if team is not Team.E:
                 return team
         return Team.E
+    #Generate list of tuples of possible moves
+    def get_moves(self) -> list[tuple(int,int)]:
+        moves: list[tuple(int,int)] = []
+        for row in range(self.dimension):
+            for idx, piece in enumerate(self.pieces[row]):
+                if piece.team is Team.E:
+                    moves.append((row,idx))
+        return moves
 
 def main() -> None:
     board = Board()
@@ -88,9 +96,11 @@ def main() -> None:
     board = board.make_move(1, 1)
     old_board = board.make_move(0, 2)
     print(old_board) #E should be winner
+    print(old_board.get_moves())
     board = old_board.make_move(2, 2)
     board = board.make_move(0, 0)
     print(board) #X should be winner
+    print(board.get_moves())
     print(old_board) #E should be winner
 
 main()
