@@ -128,11 +128,26 @@ def recursive_solve(boards: list[Board], already_searched: list[Board] = [], dep
     return ret_val
 
 def evaluate_positions(unique_boards: list[Board]) -> None:
-    #Mark winner for decisive positions
     for board in unique_boards:
-        winner = board.get_winner()
-        if winner != Team.E:
-            board.winner = winner
+        if board.winner is None:
+            winner = board.get_winner()
+            if winner != Team.E:
+                #Mark winner for decisive positions
+                board.winner = winner
+                continue
+            moves = board.get_moves()
+            if len(moves) == 0:
+                #Mark draw for positions with no moves and no winners
+                board.winner = Team.E
+                continue
+            indeces = []
+            for move in moves:
+                new_board = board.make_move(move[0], move[1])
+                index = unique_boards.index(new_board)
+                if index is None:
+                    sys.exit()
+                indeces.append(index)
+            board.leads_to = indeces
 
 def main() -> None:
     board = Board()
@@ -162,8 +177,9 @@ def main() -> None:
     for board in space:
         if board not in unique_space:
             unique_space.append(board)
+    print("Evaluating positions in unique space with length " + str(len(unique_space)))
     evaluate_positions(unique_space)
-    print("Unique space with length " + str(len(unique_space)))
+    print("Output to recursion.txt")
     with open("recursion.txt", "w") as f:
         for board in unique_space:
             print(board.short_string(), file=f)
