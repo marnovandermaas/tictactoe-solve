@@ -141,14 +141,21 @@ def evaluate_positions(unique_boards: list[Board], boards_one_move_down: list[Bo
                 #Mark draw for positions with no moves and no winners
                 board.winner = Team.E
                 continue
-            #indeces = []
-            #for move in moves:
-            #    new_board = board.make_move(move[0], move[1])
-            #    index = unique_boards.index(new_board)
-            #    if index is None:
-            #        sys.exit()
-            #    indeces.append(index)
-            #board.leads_to = indeces
+            for move in moves:
+                new_board = board.make_move(move[0], move[1])
+                new_board = boards_one_move_down[boards_one_move_down.index(new_board)]
+                if new_board.winner == board.on_move:
+                    board.winner = board.on_move
+                    break
+                if new_board.winner == Team.E:
+                    board.winner = Team.E
+            if board.winner is None:
+                if board.on_move == Team.X:
+                    board.winner = Team.O
+                elif board.on_move == Team.O:
+                    board.winner = Team.X
+                else:
+                    sys.exit()
 
 def main() -> None:
     board = Board()
