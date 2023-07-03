@@ -154,8 +154,8 @@ def main() -> None:
         if board not in unique_space:
             unique_space.append(board)
     print("Unique space with length " + str(len(unique_space)))
-    with open("recursion.txt", "a") as f:
-        for board, winner in unique_space:
+    with open("recursion.txt", "w") as f:
+        for board in unique_space:
             print(board.short_string(), file=f)
 
 main()
